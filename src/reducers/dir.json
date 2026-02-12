@@ -74,9 +74,9 @@
               "Public Videos": {}
             }
           },
-          "Blue": {
+          "J. Olander": {
             "type": "folder",
-            "name": "Blue",
+            "name": "J. Olander",
             "info": {
               "spid": "%user%",
               "icon": "user"
@@ -177,7 +177,7 @@
                   "blueapi": {},
                   "BlueBlog": {},
                   "BlueBlogs---A-social-platform": {},
-                  "blueedgetechno": {},
+                  "J. Olander": {},
                   "blueedgetechno.github.io": {},
                   "blueimage": {},
                   "bluelab": {},

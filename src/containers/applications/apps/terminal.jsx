@@ -270,7 +270,7 @@ export const WnTerminal = () => {
     } else if (type == "title") {
       setWntitle(arg.length ? arg : "Terminal");
     } else if (type == "hostname") {
-      tmpStack.push("blue");
+      tmpStack.push("J. Olander");
     } else if (type == "login") {
       login();
       tmpStack.push("started login");
@@ -278,7 +278,7 @@ export const WnTerminal = () => {
       i18next.changeLanguage("fr-FR");
       tmpStack.push("French");
     } else if (type == "blue") {
-      tmpStack.push("blueedgetechno");
+      tmpStack.push("J. Olander");
     } else if (type == "dev") {
       tmpStack.push("https://dev.blueedge.me/");
     } else if (type == "ver") {

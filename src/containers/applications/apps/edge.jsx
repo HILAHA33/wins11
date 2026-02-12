@@ -14,7 +14,7 @@ export const EdgeMenu = () => {
     "https://www.google.com/webhp?igu=1": "Google",
     "https://bing.com": "Bing",
     "https://www.youtube.com/embed/m0EHSoZzHEA": "Youtube",
-    "https://blueedge.me": "blueedge",
+    "https://blueedge.me": "J. Olander",
     "https://andrewstech.me": "\nandrewstech",
     "https://blueedge.me/unescape": "Unescape",
     "https://win11.blueedge.me": "Inception",

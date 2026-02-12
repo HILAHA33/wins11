@@ -65,7 +65,7 @@ const apps = [
     type: "app",
   },
   {
-    name: "Blue",
+    name: "J. Olander",
     icon: "win/user",
     type: "app",
     action: "EXPLORER",
