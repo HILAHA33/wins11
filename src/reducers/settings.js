@@ -17,7 +17,7 @@ const defState = {
     },
   },
   person: {
-    name: "Blue Edge",
+    name: "J. Olander",
     theme: "light",
     color: "blue",
   },
