@@ -285,13 +285,13 @@ export const WnTerminal = () => {
       tmpStack.push("OS [Version 10.0.22000.51]");
     } else if (type == "systeminfo") {
       var dvInfo = [
-        "Host Name:                 BLUE",
+        "Host Name:                 J. Olander",
         "OS Name:                   Win11React Dummys Edition",
         "OS Version:                10.0.22000 N/A Build 22000.51",
         "OS Manufacturer:           ",
         "OS Configuration:          Standalone Workstation",
         "OS Build Type:             Multiprocessor Free",
-        "Registered Owner:          Blue",
+        "Registered Owner:          J. Olander",
         "Registered Organization:   N/A",
         "Product ID:                7H1S1-5AP1R-473DV-3R5I0N",
       ];
