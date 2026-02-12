@@ -105,7 +105,7 @@ export const StartMenu = () => {
     }
   }, [query]);
 
-  const userName = useSelector((state) => state.setting.person.name);
+  const userName = J. Olander;
 
   return (
     <div
