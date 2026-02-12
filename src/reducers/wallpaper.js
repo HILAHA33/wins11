@@ -3,7 +3,7 @@ var locked = localStorage.getItem("locked");
 
 const walls = [
   "default/img0.jpg",
-  "dark/img0.jpg",
+  "https://cdn.builder.io/api/v1/image/assets%2F37e1f4ac500e4c6c9efe772f6c93f617%2F4298759886c1400197f2d8cc1a4d5ab9",
   "ThemeA/img0.jpg",
   "ThemeA/img1.jpg",
   "ThemeA/img2.jpg",
@@ -85,14 +85,15 @@ const wallReducer = (state = defState, action) => {
         wps = 0,
         src = "";
 
-      if (isIndex) {
-        wps = localStorage.getItem("wps");
-        src = walls[wps] ? walls[wps] : walls[0];
+      if (isIndex && action.payload < walls.length) {
+        wps = action.payload;
+        localStorage.setItem("wps", wps);
+        src = walls[wps];
       } else {
         const idx = walls.findIndex((item) => item === action.payload);
         localStorage.setItem("wps", idx);
         src = action.payload;
-        wps = walls[idx];
+        wps = idx;
       }
 
       return {
