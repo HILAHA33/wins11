@@ -42,7 +42,7 @@ export const Settings = () => {
     });
   };
 
-  const userName = J. Olander;
+  const userName = useSelector((state) => state.setting.person.name);
 
   return (
     <div
