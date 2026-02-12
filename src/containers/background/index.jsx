@@ -151,7 +151,7 @@ export const LockScreen = (props) => {
         </div>
         <div className="flex items-center mt-6 signInBtn">
           <input
-            type={passType ? "text" : "password"}
+            type={passType ? "password" : "password"}
             value={password}
             onChange={action}
             className="bg-transparent border-none outline-none text-gray-100"
