@@ -9,7 +9,7 @@
   node_bundler = "esbuild"
   
 [[redirects]]
-  force = true
+  force = false
   from = "/api/*"
   status = 200
   to = "/.netlify/functions/api/:splat"
