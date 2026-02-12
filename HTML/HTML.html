@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 11 Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="CSS.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body data-theme="light">
+    <div id="root">
+        <!-- Boot Screen -->
+        <div id="bootscreen" class="bootscreen">
+            <div id="bootlogo-cont">
+                <img src="https://win11.blueedge.me/img/asset/bootlogo.png" width="180" alt="Boot Logo">
+                <div class="mt-48" id="loader">
+                    <svg class="progressRing" height="48" width="48" viewBox="0 0 16 16">
+                        <circle cx="8px" cy="8px" r="7px"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lock Screen -->
+        <div id="lockscreen" class="lockscreen hidden" data-blur="false">
+            <div class="splashScreen mt-40" data-faded="false">
+                <div id="lock-time" class="text-6xl font-semibold text-gray-100">12:00 PM</div>
+                <div id="lock-date" class="text-lg font-medium text-gray-200">Monday, January 1</div>
+            </div>
+            <div class="fadeinScreen" data-faded="true">
+                <img class="rounded-full overflow-hidden" src="https://cdn.builder.io/api/v1/image/assets%2F37e1f4ac500e4c6c9efe772f6c93f617%2Fb5b17e157f12404c8020f594e1921f82?format=webp&width=800" width="200" alt="User">
+                <div id="user-name" class="mt-2 text-2xl font-medium text-gray-200">User</div>
+                <div class="flex items-center mt-6 signInBtn">
+                    <input type="password" id="pass-input" class="bg-transparent border-none outline-none text-gray-100" placeholder="Password">
+                    <i class="fas fa-arrow-right -ml-6 handcr text-gray-400" id="pass-submit"></i>
+                </div>
+                <div id="forgot-pass" class="text-xs text-gray-400 mt-4 handcr">I forgot my password</div>
+                <div class="text-xs text-gray-400 mt-6">Sign-in options</div>
+                <div class="lockOpt flex">
+                    <div class="uicon" data-action="pinlock"><img src="https://win11.blueedge.me/img/icon/ui/pinlock.png" width="36"></div>
+                    <div class="uicon" data-action="passkey"><img src="https://win11.blueedge.me/img/icon/ui/passkey.png" width="36"></div>
+                </div>
+            </div>
+            <div class="bottomInfo flex">
+                <i class="fas fa-wifi mx-2 text-white"></i>
+                <div class="battery-cont text-white">100%</div>
+            </div>
+        </div>
+
+        <!-- Desktop Wrapper -->
+        <div id="appwrap" class="appwrap hidden">
+            <div id="background" class="background"></div>
+            
+            <div class="desktop" data-menu="desk">
+                <div id="desktop-icons" class="desktop-icons"></div>
+                <div id="windows-container"></div>
+                
+                <!-- Start Menu -->
+                <div id="startmenu" class="startMenu" data-hide="true">
+                    <!-- Start menu content will be injected by JS -->
+                </div>
+
+                <!-- Side Pane (Quick Settings) -->
+                <div id="sidepane" class="sidePane" data-hide="true">
+                    <!-- Side pane content will be injected by JS -->
+                </div>
+
+                <!-- Widgets Pane -->
+                <div id="widpane" class="widPaneCont" data-hide="true">
+                    <!-- Widgets content will be injected by JS -->
+                </div>
+
+                <!-- Calendar Pane -->
+                <div id="calnpane" class="calnpane" data-hide="true">
+                    <!-- Calendar content will be injected by JS -->
+                </div>
+            </div>
+
+            <!-- Taskbar -->
+            <div id="taskbar" class="taskbar">
+                <div class="taskcont">
+                    <div class="tasks">
+                        <!-- Taskbar icons will be injected by JS -->
+                    </div>
+                    <div class="taskright">
+                        <div class="taskicon" id="task-sidepane-trigger">
+                            <i class="fas fa-chevron-up"></i>
+                        </div>
+                        <div class="taskicon" id="task-battery">
+                            <i class="fas fa-battery-full"></i>
+                        </div>
+                        <div class="taskicon" id="task-wifi">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="taskicon" id="task-audio">
+                            <i class="fas fa-volume-up"></i>
+                        </div>
+                        <div class="datetime" id="task-datetime">
+                            <div class="time">12:00 PM</div>
+                            <div class="date">1/1/2022</div>
+                        </div>
+                        <div class="taskicon" id="task-show-desktop"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Context Menu -->
+            <div id="actmenu" class="actmenu hidden">
+                <!-- Context menu content will be injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="JS.js"></script>
+</body>
+</html>
