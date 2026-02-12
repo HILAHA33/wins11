@@ -138,7 +138,7 @@ export const LockScreen = (props) => {
       <div className="fadeinScreen" data-faded={!lock} data-unlock={unlocked}>
         <Image
           className="rounded-full overflow-hidden"
-          src="img/asset/prof.jpg"
+          src="https://cdn.builder.io/api/v1/image/assets%2F37e1f4ac500e4c6c9efe772f6c93f617%2Fb5b17e157f12404c8020f594e1921f82?format=webp&width=800"
           w={200}
           ext
         />
