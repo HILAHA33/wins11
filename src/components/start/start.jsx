@@ -262,7 +262,7 @@ export const StartMenu = () => {
           <div className="menuBar">
             <div className="profile handcr">
               <Icon
-                src="blueProf"
+                src="https://cdn.builder.io/api/v1/image/assets%2F37e1f4ac500e4c6c9efe772f6c93f617%2Fb5b17e157f12404c8020f594e1921f82?format=webp&width=800"
                 ui
                 rounded
                 width={26}
