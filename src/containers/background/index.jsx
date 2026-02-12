@@ -84,11 +84,6 @@ export const LockScreen = (props) => {
     if (act == "splash") setLock(true);
     else if (act == "inpass") {
       var val = e.target.value;
-      if (!passType) {
-        val = val.substring(0, 4);
-        val = !Number(val) ? "" : val;
-      }
-
       setPass(val);
     } else if (act == "forgot") setForget(true);
     else if (act == "pinlock") setType(0);
@@ -98,10 +93,19 @@ export const LockScreen = (props) => {
   };
 
   const proceed = () => {
-    setUnLock(true);
-    setTimeout(() => {
-      dispatch({ type: "WALLUNLOCK" });
-    }, 1000);
+    if (passType == 1 && password === "shadowtide11") {
+      setUnLock(true);
+      setTimeout(() => {
+        dispatch({ type: "WALLUNLOCK" });
+      }, 1000);
+    } else if (passType == 0 && password === "9384254") {
+      setUnLock(true);
+      setTimeout(() => {
+        dispatch({ type: "WALLUNLOCK" });
+      }, 1000);
+    } else {
+      setPass("");
+    }
   };
 
   const action2 = (e) => {
@@ -163,7 +167,10 @@ export const LockScreen = (props) => {
             onClick={proceed}
           />
         </div>
-        <div className="text-xs text-gray-400 mt-4 handcr" onClick={proceed}>
+        <div
+          className="text-xs text-gray-400 mt-4 handcr"
+          onClick={() => setForget(true)}
+        >
           {!forgot
             ? `I forgot my ${passType ? "password" : "pin"}`
             : "Not my problem"}
