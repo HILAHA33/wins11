@@ -138,7 +138,7 @@ export const LockScreen = (props) => {
       <div className="fadeinScreen" data-faded={!lock} data-unlock={unlocked}>
         <Image
           className="rounded-full overflow-hidden"
-          src="img/asset/prof.jpg"
+          src="https://cdn.builder.io/api/v1/image/assets%2F37e1f4ac500e4c6c9efe772f6c93f617%2Fb5b17e157f12404c8020f594e1921f82?format=webp&width=800"
           w={200}
           ext
         />
@@ -148,7 +148,7 @@ export const LockScreen = (props) => {
         <div className="flex items-center mt-6 signInBtn" onClick={proceed}>
           Sign in
         </div>
-        {/*   <input type={passType?"text":"password"} value={password} onChange={action}
+        {   <input type={passType?"text":"password"} value={password} onChange={action}
               data-action="inpass" onKeyDown={action2} placeholder={passType?"Password":"PIN"}/>
           <Icon className="-ml-6 handcr" fafa="faArrowRight" width={14}
             color="rgba(170, 170, 170, 0.6)" onClick={proceed}/>
@@ -165,7 +165,7 @@ export const LockScreen = (props) => {
             click="pinlock" payload={passType==0}/>
           <Icon src="passkey" onClick={action} ui width={36}
             click="passkey" payload={passType==1}/>
-        </div> */}
+        </div> }
       </div>
       <div className="bottomInfo flex">
         <Icon className="mx-2" src="wifi" ui width={16} invert />
