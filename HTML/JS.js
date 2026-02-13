@@ -42,7 +42,7 @@ let state = {
     apps: {
         settings: { open: false, max: false, z: 1, hide: false, dim: { width: "800px", height: "600px", top: "10%", left: "10%" } },
         explorer: { open: false, max: false, z: 1, hide: false, dim: { width: "900px", height: "600px", top: "15%", left: "15%" } },
-        edge: { open: false, max: false, z: 1, hide: false, dim: { width: "1000px", height: "700px", top: "5%", left: "5%" }, url: "https://www.bing.com" },
+        edge: { open: false, max: false, z: 1, hide: false, dim: { width: "1000px", height: "700px", top: "5%", left: "5%" }, tabs: [{url: "https://www.bing.com"}], activeTab: 0 },
         notepad: { open: false, max: false, z: 1, hide: false, dim: { width: "600px", height: "400px", top: "20%", left: "20%" } },
         terminal: { open: false, max: false, z: 1, hide: false, dim: { width: "700px", height: "450px", top: "25%", left: "25%" } },
         calculator: { open: false, max: false, z: 1, hide: false, dim: { width: "320px", height: "500px", top: "30%", left: "30%" } },
@@ -87,8 +87,29 @@ function dispatch(action) {
                 state.apps[appKey].hide = false;
                 state.wallpaper.hz++;
                 state.apps[appKey].z = state.wallpaper.hz;
+
+                if (action.url && appKey === "edge") {
+                    state.apps.edge.tabs[state.apps.edge.activeTab].url = action.url;
+                }
             }
             state.menus.start = false;
+            break;
+        case "EDGE_ADDTAB":
+            state.apps.edge.tabs.push({url: "https://www.bing.com"});
+            state.apps.edge.activeTab = state.apps.edge.tabs.length - 1;
+            break;
+        case "EDGE_CLOSETAB":
+            if (state.apps.edge.tabs.length > 1) {
+                state.apps.edge.tabs.splice(action.payload, 1);
+                if (state.apps.edge.activeTab >= state.apps.edge.tabs.length) {
+                    state.apps.edge.activeTab = state.apps.edge.tabs.length - 1;
+                }
+            } else {
+                state.apps.edge.open = false;
+            }
+            break;
+        case "EDGE_SETTAB":
+            state.apps.edge.activeTab = action.payload;
             break;
         case "CLOSE_APP":
             if (state.apps[action.payload]) {
@@ -379,15 +400,54 @@ function renderAppContent(key) {
                 </div>
             </div>`;
         case "edge":
-            return `<iframe src="${state.apps.edge.url}" class="w-full h-full border-none"></iframe>`;
+            return `<div class="flex flex-col h-full bg-[#f9f9f9]">
+                <div class="flex items-center bg-[#e7eaec] h-10 px-2 space-x-2">
+                    <div class="flex overflow-x-auto no-scrollbar flex-grow">
+                        ${state.apps.edge.tabs.map((tab, i) => `
+                            <div class="flex items-center px-3 py-1 bg-white border-t-2 border-transparent ${i === state.apps.edge.activeTab ? 'border-blue-500 opacity-100' : 'opacity-60'} rounded-t cursor-pointer min-w-[120px]" onclick="dispatch({type: 'EDGE_SETTAB', payload: ${i}})">
+                                <span class="text-xs truncate flex-grow">${tab.url.replace('https://', '')}</span>
+                                <i class="fas fa-times text-[10px] ml-2 hover:bg-gray-200 p-1 rounded" onclick="event.stopPropagation(); dispatch({type: 'EDGE_CLOSETAB', payload: ${i}})"></i>
+                            </div>
+                        `).join("")}
+                    </div>
+                    <i class="fas fa-plus p-2 hover:bg-gray-300 rounded cursor-pointer" onclick="dispatch({type: 'EDGE_ADDTAB'})"></i>
+                </div>
+                <div class="flex items-center p-2 bg-white border-b space-x-4">
+                    <i class="fas fa-arrow-left opacity-40"></i>
+                    <i class="fas fa-arrow-right opacity-40"></i>
+                    <i class="fas fa-redo opacity-40"></i>
+                    <div class="flex-grow border px-4 py-1 rounded-full bg-gray-50 text-xs truncate">
+                        ${state.apps.edge.tabs[state.apps.edge.activeTab].url}
+                    </div>
+                </div>
+                <div class="flex-grow relative">
+                    ${state.apps.edge.tabs.map((tab, i) => `
+                        <iframe src="${tab.url}" class="w-full h-full absolute top-0 left-0 border-none ${i === state.apps.edge.activeTab ? 'z-10' : 'z-0 pointer-events-none opacity-0'}"></iframe>
+                    `).join("")}
+                </div>
+            </div>`;
         case "terminal":
             return `<div class="bg-black text-white p-4 font-mono h-full">
                 <div>Microsoft Windows [Version 10.0.22000.194]</div>
                 <div>(c) Microsoft Corporation. All rights reserved.</div>
                 <div class="mt-4">C:\\Users\\User> <span class="animate-pulse">_</span></div>
             </div>`;
-        default:
-            return `<div class="flex items-center justify-center h-full text-gray-400 italic">${key.toUpperCase()} Content Coming Soon</div>`;
+        case "calculator":
+            return `<div class="flex flex-col h-full bg-[#f3f3f3] text-black p-4">
+                <div class="text-right text-4xl mb-8 mt-auto">0</div>
+                <div class="grid grid-cols-4 gap-1 flex-grow">
+                    ${['CE', 'C', '⌫', '÷', '7', '8', '9', '×', '4', '5', '6', '-', '1', '2', '3', '+', '+/-', '0', '.', '='].map(btn => `
+                        <div class="flex items-center justify-center bg-white hover:bg-gray-100 rounded text-sm h-12">${btn}</div>
+                    `).join("")}
+                </div>
+            </div>`;
+        case "notepad":
+            return `<div class="flex flex-col h-full bg-white text-black">
+                <div class="flex text-xs p-1 space-x-4 border-b bg-gray-50">
+                    <span>File</span><span>Edit</span><span>Format</span><span>View</span><span>Help</span>
+                </div>
+                <textarea class="flex-grow p-4 outline-none resize-none font-mono text-sm"></textarea>
+            </div>`;
     }
 }
 
