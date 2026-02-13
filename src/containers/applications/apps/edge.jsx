@@ -67,7 +67,7 @@ export const EdgeMenu = () => {
 
         if (isValidURL(qry)) {
           if (!qry.startsWith("http")) {
-            qry = "https://jaxson-os.replit.app/uv/service/https://" + qry;
+            qry = "https://" + qry;
           }
         } else {
           qry = "https://www.bing.com/search?q=" + qry;
