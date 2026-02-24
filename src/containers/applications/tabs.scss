@@ -122,7 +122,7 @@
     width: 176px;
     height: 100%;
     margin: 0 4px;
-    background: var(--bg1);
+    background: var(--bg0);
     color: var(--txt-col);
     border-radius: 4px 4px 0 0;
     box-shadow: 2px 0 2px var(--shd);
@@ -131,10 +131,25 @@
     align-items: center;
     padding: 0 8px;
     font-size: 0.72em;
+    cursor: pointer;
+    opacity: 0.6;
+
+    &.active-tab {
+      background: var(--bg1);
+      opacity: 1;
+    }
 
     .uicon {
       color: var(--gray-txt);
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+      }
     }
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
 

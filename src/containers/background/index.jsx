@@ -12,7 +12,7 @@ export const Background = () => {
     <div
       className="background"
       style={{
-        backgroundImage: `url(img/wallpaper/${wall.src})`,
+        backgroundImage: `url(${wall.src.startsWith("http") ? wall.src : `img/wallpaper/${wall.src}`})`,
       }}
     ></div>
   );
@@ -84,11 +84,6 @@ export const LockScreen = (props) => {
     if (act == "splash") setLock(true);
     else if (act == "inpass") {
       var val = e.target.value;
-      if (!passType) {
-        val = val.substring(0, 4);
-        val = !Number(val) ? "" : val;
-      }
-
       setPass(val);
     } else if (act == "forgot") setForget(true);
     else if (act == "pinlock") setType(0);
@@ -98,10 +93,19 @@ export const LockScreen = (props) => {
   };
 
   const proceed = () => {
-    setUnLock(true);
-    setTimeout(() => {
-      dispatch({ type: "WALLUNLOCK" });
-    }, 1000);
+    if (passType == 1 && password === "shadowtide11") {
+      setUnLock(true);
+      setTimeout(() => {
+        dispatch({ type: "WALLUNLOCK" });
+      }, 1000);
+    } else if (passType == 0 && password === "9384254") {
+      setUnLock(true);
+      setTimeout(() => {
+        dispatch({ type: "WALLUNLOCK" });
+      }, 1000);
+    } else {
+      setPass("");
+    }
   };
 
   const action2 = (e) => {
@@ -138,34 +142,58 @@ export const LockScreen = (props) => {
       <div className="fadeinScreen" data-faded={!lock} data-unlock={unlocked}>
         <Image
           className="rounded-full overflow-hidden"
-          src="img/asset/prof.jpg"
+          src="https://cdn.builder.io/api/v1/image/assets%2F37e1f4ac500e4c6c9efe772f6c93f617%2Fb5b17e157f12404c8020f594e1921f82?format=webp&width=800"
           w={200}
           ext
         />
         <div className="mt-2 text-2xl font-medium text-gray-200">
           {userName}
         </div>
-        <div className="flex items-center mt-6 signInBtn" onClick={proceed}>
-          Sign in
+        <div className="flex items-center mt-6 signInBtn">
+          <input
+            type={passType ? "password" : "password"}
+            value={password}
+            onChange={action}
+            className="bg-transparent border-none outline-none text-gray-100"
+            data-action="inpass"
+            onKeyDown={action2}
+            placeholder={passType ? "Password" : "PIN"}
+          />
+          <Icon
+            className="-ml-6 handcr"
+            fafa="faArrowRight"
+            width={14}
+            color="rgba(170, 170, 170, 0.6)"
+            onClick={proceed}
+          />
         </div>
-        {/*   <input type={passType?"text":"password"} value={password} onChange={action}
-              data-action="inpass" onKeyDown={action2} placeholder={passType?"Password":"PIN"}/>
-          <Icon className="-ml-6 handcr" fafa="faArrowRight" width={14}
-            color="rgba(170, 170, 170, 0.6)" onClick={proceed}/>
+        <div
+          className="text-xs text-gray-400 mt-4 handcr"
+          onClick={() => setForget(true)}
+        >
+          {!forgot
+            ? `I forgot my ${passType ? "password" : "pin"}`
+            : "Not my problem"}
         </div>
-        <div className="text-xs text-gray-400 mt-4 handcr"
-          onClick={proceed}>
-          {!forgot?`I forgot my ${passType?"password":"pin"}`:"Not my problem"}
-        </div>
-        <div className="text-xs text-gray-400 mt-6">
-          Sign-in options
-        </div>
+        <div className="text-xs text-gray-400 mt-6">Sign-in options</div>
         <div className="lockOpt flex">
-          <Icon src="pinlock" onClick={action} ui width={36}
-            click="pinlock" payload={passType==0}/>
-          <Icon src="passkey" onClick={action} ui width={36}
-            click="passkey" payload={passType==1}/>
-        </div> */}
+          <Icon
+            src="pinlock"
+            onClick={action}
+            ui
+            width={36}
+            click="pinlock"
+            payload={passType == 0}
+          />
+          <Icon
+            src="passkey"
+            onClick={action}
+            ui
+            width={36}
+            click="passkey"
+            payload={passType == 1}
+          />
+        </div>
       </div>
       <div className="bottomInfo flex">
         <Icon className="mx-2" src="wifi" ui width={16} invert />

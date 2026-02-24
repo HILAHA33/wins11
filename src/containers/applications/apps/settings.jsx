@@ -123,7 +123,11 @@ export const Settings = () => {
                             <div key={i} className={e.type}>
                               <div className="left">
                                 <img
-                                  src={`img/wallpaper/${wall.src}`}
+                                  src={
+                                    wall.src.startsWith("http")
+                                      ? wall.src
+                                      : `img/wallpaper/${wall.src}`
+                                  }
                                   alt=""
                                   className="device_img"
                                 />
@@ -206,7 +210,11 @@ export const Settings = () => {
                             <div key={i} className="personaliseTop">
                               <img
                                 className="mainImg"
-                                src={`img/wallpaper/${wall.src}`}
+                                src={
+                                  wall.src.startsWith("http")
+                                    ? wall.src
+                                    : `img/wallpaper/${wall.src}`
+                                }
                                 alt=""
                               />
                               <div>

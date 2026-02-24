@@ -4,17 +4,76 @@ import { Icon, ToolBar, LazyComponent } from "../../../utils/general";
 
 export const EdgeMenu = () => {
   const wnapp = useSelector((state) => state.apps.edge);
-  const [url, setUrl] = useState("https://www.google.com/?igu=1");
-  const [ierror, setErr] = useState(true);
-  const [isTyping, setTyping] = useState(false);
-  const [hist, setHist] = useState(["https://bing.com", "https://bing.com"]);
+  const [tabs, setTabs] = useState([
+    {
+      url: "https://www.google.com/?igu=1",
+      hist: ["https://bing.com", "https://bing.com"],
+      isTyping: false,
+    },
+  ]);
+  const [activeTab, setActiveTab] = useState(0);
+  const [ierror, setErr] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/uv/uv.sw.js", {
+          scope: "/uv/service/",
+        })
+        .then(() => {
+          console.log("Ultraviolet service worker registered");
+        })
+        .catch((err) => {
+          console.error("Ultraviolet service worker registration failed:", err);
+        });
+    }
+
+    if (typeof window.BareMux !== "undefined") {
+      const connection = new window.BareMux.BareMuxConnection("/uv/mux.worker.js");
+      const wispUrl =
+        (window.location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        "/wisp/";
+      connection.setTransport("/uv/wisp.js", [{ wisp: wispUrl }]);
+    }
+  }, []);
+
+  const getProxiedUrl = (url) => {
+    if (!url) return "";
+
+    let targetUrl = url;
+    if (url.startsWith("/uv/service/")) {
+      targetUrl = url.slice("/uv/service/".length);
+    } else if (url.startsWith(window.location.origin + "/uv/service/")) {
+      targetUrl = url.slice((window.location.origin + "/uv/service/").length);
+    }
+
+    // If targetUrl is already encoded (contains XOR-like patterns or is just a URL)
+    // Actually, Ultraviolet encoding is usually not easily detectable without the codec
+    // So we'll just always encode the targetUrl if it looks like a plain URL
+
+    try {
+      if (typeof window.__uv$config !== "undefined" && typeof Ultraviolet !== "undefined") {
+        return (
+          window.location.origin +
+          window.__uv$config.prefix +
+          window.__uv$config.encodeUrl(targetUrl)
+        );
+      }
+    } catch (e) {
+      console.error("Error encoding URL:", e);
+    }
+    return url;
+  };
+
+  const active = tabs[activeTab] || tabs[0];
 
   const iframes = {
     "https://www.google.com/webhp?igu=1": "Google",
     "https://bing.com": "Bing",
     "https://www.youtube.com/embed/m0EHSoZzHEA": "Youtube",
-    "https://blueedge.me": "blueedge",
+    "https://blueedge.me": "J. Olander",
     "https://andrewstech.me": "\nandrewstech",
     "https://blueedge.me/unescape": "Unescape",
     "https://win11.blueedge.me": "Inception",
@@ -37,20 +96,24 @@ export const EdgeMenu = () => {
   };
 
   const action = (e) => {
-    var iframe = document.getElementById("isite");
     var x = e.target && e.target.dataset.payload;
+    const newTabs = [...tabs];
+    const current = newTabs[activeTab];
 
-    if (iframe && x == 0) {
-      iframe.src = iframe.src;
-    } else if (iframe && x == 1) {
-      setHist([url, "https://www.bing.com"]);
-      setUrl("https://www.bing.com");
-      setTyping(false);
-    } else if (iframe && x == 2) {
-      setHist([url, "https://www.google.com/webhp?igu=1"]);
-      setUrl("https://www.google.com/webhp?igu=1");
-      setTyping(false);
-    } else if (iframe && x == 3) {
+    if (x == 0) {
+      const iframe = document.getElementById("isite-" + activeTab);
+      if (iframe) iframe.src = iframe.src;
+    } else if (x == 1) {
+      current.hist = [current.url, "https://www.bing.com"];
+      current.url = "https://www.bing.com";
+      current.isTyping = false;
+      setTabs(newTabs);
+    } else if (x == 2) {
+      current.hist = [current.url, "https://www.google.com/webhp?igu=1"];
+      current.url = "https://www.google.com/webhp?igu=1";
+      current.isTyping = false;
+      setTabs(newTabs);
+    } else if (x == 3) {
       if (e.key === "Enter") {
         var qry = e.target.value;
 
@@ -62,32 +125,68 @@ export const EdgeMenu = () => {
           qry = "https://www.bing.com/search?q=" + qry;
         }
 
+        // Prefix with /uv/service/ as requested by user
+        if (!qry.startsWith("/uv/service/")) {
+            qry = "/uv/service/" + qry;
+        }
+
         e.target.value = qry;
-        setHist([hist[0], qry]);
-        setUrl(qry);
-        setTyping(false);
+        current.hist = [current.hist[0], qry];
+        current.url = qry;
+        current.isTyping = false;
+        setTabs(newTabs);
       }
     } else if (x == 4) {
-      setUrl(hist[0]);
-      setTyping(false);
+      current.url = current.hist[0];
+      current.isTyping = false;
+      setTabs(newTabs);
     } else if (x == 5) {
-      setUrl(hist[1]);
-      setTyping(false);
+      current.url = current.hist[1];
+      current.isTyping = false;
+      setTabs(newTabs);
     } else if (x == 6) {
       var tmp = e.target.dataset.url;
-      setHist([url, tmp]);
-      setUrl(tmp);
-      setTyping(false);
+      current.hist = [current.url, tmp];
+      current.url = tmp;
+      current.isTyping = false;
+      setTabs(newTabs);
     }
   };
 
   const typing = (e) => {
-    if (!isTyping) {
-      setTyping(true);
-      console.log([url, url]);
-      setHist([url, url]);
+    const newTabs = [...tabs];
+    const current = newTabs[activeTab];
+    if (!current.isTyping) {
+      current.isTyping = true;
+      current.hist = [current.url, current.url];
     }
-    setUrl(e.target.value);
+    current.url = e.target.value;
+    setTabs(newTabs);
+  };
+
+  const addTab = () => {
+    setTabs([
+      ...tabs,
+      {
+        url: "https://www.google.com/?igu=1",
+        hist: ["https://bing.com", "https://bing.com"],
+        isTyping: false,
+      },
+    ]);
+    setActiveTab(tabs.length);
+  };
+
+  const closeTab = (e, i) => {
+    e.stopPropagation();
+    if (tabs.length === 1) {
+      dispatch({ type: wnapp.action, payload: "close" });
+      return;
+    }
+    const newTabs = tabs.filter((_, idx) => idx !== i);
+    setTabs(newTabs);
+    if (activeTab >= newTabs.length) {
+      setActiveTab(newTabs.length - 1);
+    }
   };
 
   const handleFailed = () => {
@@ -96,11 +195,13 @@ export const EdgeMenu = () => {
 
   useEffect(() => {
     if (wnapp.url) {
-      setTyping(false);
-      setUrl(wnapp.url);
+      const newTabs = [...tabs];
+      newTabs[activeTab].isTyping = false;
+      newTabs[activeTab].url = wnapp.url;
+      setTabs(newTabs);
       dispatch({ type: "EDGELINK" });
     }
-  });
+  }, [wnapp.url]);
 
   return (
     <div
@@ -122,17 +223,29 @@ export const EdgeMenu = () => {
         float
       />
       <div className="windowScreen flex flex-col">
-        <div className="overTool flex">
+        <div className="overTool flex items-center">
           <Icon src={wnapp.icon} width={14} margin="0 6px" />
-          <div className="btab">
-            <div>New Tab</div>
-            <Icon
-              fafa="faTimes"
-              click={wnapp.action}
-              payload="close"
-              width={10}
-            />
+          <div className="flex overflow-x-auto no-scrollbar">
+            {tabs.map((tab, i) => (
+              <div
+                key={i}
+                className={`btab ${i === activeTab ? "active-tab" : ""}`}
+                onClick={() => setActiveTab(i)}
+              >
+                <div className="text-xs truncate w-24 ml-2">
+                  {iframes[tab.url] ||
+                    (tab.url.includes("google.com") ? "Google" : "New Tab")}
+                </div>
+                <Icon
+                  fafa="faTimes"
+                  onClick={(e) => closeTab(e, i)}
+                  width={10}
+                  margin="0 6px"
+                />
+              </div>
+            ))}
           </div>
+          <Icon fafa="faPlus" onClick={addTab} width={12} margin="0 10px" />
         </div>
         <div className="restWindow flex-grow flex flex-col">
           <div className="addressBar w-full h-10 flex items-center">
@@ -174,7 +287,7 @@ export const EdgeMenu = () => {
                 onKeyDown={action}
                 onChange={typing}
                 data-payload={3}
-                value={url}
+                value={active.url}
                 placeholder="Type url or a query to search"
                 type="text"
               />
@@ -216,15 +329,20 @@ export const EdgeMenu = () => {
               })}
             </div>
           </div>
-          <div className="siteFrame flex-grow overflow-hidden">
+          <div className="siteFrame flex-grow overflow-hidden relative">
             <LazyComponent show={!wnapp.hide}>
-              <iframe
-                src={!isTyping ? url : hist[0]}
-                id="isite"
-                frameborder="0"
-                className="w-full h-full"
-                title="site"
-              ></iframe>
+              {tabs.map((tab, i) => (
+                <iframe
+                  key={i}
+                  src={!tab.isTyping ? getProxiedUrl(tab.url) : getProxiedUrl(tab.hist[0])}
+                  id={"isite-" + i}
+                  frameborder="0"
+                  className={`w-full h-full absolute top-0 left-0 ${
+                    i === activeTab ? "z-10" : "z-0 pointer-events-none opacity-0"
+                  }`}
+                  title="site"
+                ></iframe>
+              ))}
             </LazyComponent>
 
             <div
