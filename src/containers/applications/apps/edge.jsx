@@ -12,8 +12,60 @@ export const EdgeMenu = () => {
     },
   ]);
   const [activeTab, setActiveTab] = useState(0);
-  const [ierror, setErr] = useState(true);
+  const [ierror, setErr] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/uv/uv.sw.js", {
+          scope: "/uv/service/",
+        })
+        .then(() => {
+          console.log("Ultraviolet service worker registered");
+        })
+        .catch((err) => {
+          console.error("Ultraviolet service worker registration failed:", err);
+        });
+    }
+
+    if (typeof window.BareMux !== "undefined") {
+      const connection = new window.BareMux.BareMuxConnection("/uv/mux.worker.js");
+      const wispUrl =
+        (window.location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        "/wisp/";
+      connection.setTransport("/uv/wisp.js", [{ wisp: wispUrl }]);
+    }
+  }, []);
+
+  const getProxiedUrl = (url) => {
+    if (!url) return "";
+
+    let targetUrl = url;
+    if (url.startsWith("/uv/service/")) {
+      targetUrl = url.slice("/uv/service/".length);
+    } else if (url.startsWith(window.location.origin + "/uv/service/")) {
+      targetUrl = url.slice((window.location.origin + "/uv/service/").length);
+    }
+
+    // If targetUrl is already encoded (contains XOR-like patterns or is just a URL)
+    // Actually, Ultraviolet encoding is usually not easily detectable without the codec
+    // So we'll just always encode the targetUrl if it looks like a plain URL
+
+    try {
+      if (typeof window.__uv$config !== "undefined" && typeof Ultraviolet !== "undefined") {
+        return (
+          window.location.origin +
+          window.__uv$config.prefix +
+          window.__uv$config.encodeUrl(targetUrl)
+        );
+      }
+    } catch (e) {
+      console.error("Error encoding URL:", e);
+    }
+    return url;
+  };
 
   const active = tabs[activeTab] || tabs[0];
 
@@ -71,6 +123,11 @@ export const EdgeMenu = () => {
           }
         } else {
           qry = "https://www.bing.com/search?q=" + qry;
+        }
+
+        // Prefix with /uv/service/ as requested by user
+        if (!qry.startsWith("/uv/service/")) {
+            qry = "/uv/service/" + qry;
         }
 
         e.target.value = qry;
@@ -277,7 +334,7 @@ export const EdgeMenu = () => {
               {tabs.map((tab, i) => (
                 <iframe
                   key={i}
-                  src={!tab.isTyping ? tab.url : tab.hist[0]}
+                  src={!tab.isTyping ? getProxiedUrl(tab.url) : getProxiedUrl(tab.hist[0])}
                   id={"isite-" + i}
                   frameborder="0"
                   className={`w-full h-full absolute top-0 left-0 ${
